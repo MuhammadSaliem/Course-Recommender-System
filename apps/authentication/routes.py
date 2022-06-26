@@ -124,6 +124,7 @@ def addCourse():
 def userCourses():    
     courseList = userTakenCourses(current_user.username)
     print('*********************************************', courseList[0].course_id)
+    
     return render_template('home/course-list.html', courses = courseList, segment= 'none')
 
 # Login & Registration
