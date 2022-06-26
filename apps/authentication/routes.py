@@ -89,10 +89,13 @@ def course():
 
     username = current_user.username
     taken_courses = userTakenCoursesIds(username)
-    
+    #print('***********************', type(taken_courses[0]), '**********************')
+    print('***********************', len(taken_courses), '**********************')
+
     if request.method == 'GET':
         if  len(taken_courses) > 0 :
             df_temp = udemy_functions.recommend_for_user(username , 5,taken_courses, df_courses, df_norm)
+            print('***********************', len(df_temp), '**********************')
             df_temp= df_temp.iloc[1:50][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
             return render_template('home/course.html', courses = df_temp, segment= 'none')
         return render_template('home/course.html',courses= df_courses.iloc[1:100][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')

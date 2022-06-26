@@ -24,7 +24,7 @@ def recommend_for_user(user_name, n_courses, taken_courses, df_courses, df_norm)
           .format(title.values[0],course_id))
         print(df_recommend)
         print()
-    if len_courses>1:
+    if len_courses>0:
         n_courses=n_courses+1
         df_temp=df_courses.copy()
         for i, course_id in enumerate(list_courses):
@@ -40,3 +40,5 @@ def recommend_for_user(user_name, n_courses, taken_courses, df_courses, df_norm)
         print('The following courses are recommended after all taken courses:')
         print(df_temp.iloc[1:n_courses][['published_title', 'avg_cos_sim', 'image', 'instructor', 'price']])
         return df_temp #return df_temp for Flask API
+
+        
