@@ -43,7 +43,7 @@ def data():
     lst = []
     for i in range(len(df)):
         course = Course()
-        course.course_id = str(df['id'][i])
+        course.id = str(df['id'][i])
         course.title = df['published_title'][i]
         course.price = df['price'][i]
         course.image = df['image'][i]
@@ -71,7 +71,6 @@ def userTakenCoursesIds(user):
     taken_courses = []
     for course in _courseList:
         taken_courses.append(course.courseId)
-
     return taken_courses    
 
 #Return list of courses taken by a user
@@ -79,7 +78,7 @@ def userTakenCourses(username):
     course_id_list= userTakenCoursesIds(current_user.username)
     courseList = []
     for courseid in course_id_list:
-        courseList.append(Course.query.filter_by(course_id = courseid).first())
+        courseList.append(Course.query.filter_by(id = courseid).first())
         print(courseid)
 
     return courseList        
@@ -122,10 +121,12 @@ def addCourse():
 @blueprint.route('/usercourses', methods = ['GET'])    
 @login_required
 def userCourses():    
-    courseList = userTakenCourses(current_user.username)
-    print('*********************************************', courseList[0].course_id)
+    courseList = userTakenCourses(current_user.username)    
+    if len(courseList) > 0:
+        return render_template('home/course-list.html', courses = courseList, segment= 'none')
+    return render_template('home/page-404.html'), 404         
+
     
-    return render_template('home/course-list.html', courses = courseList, segment= 'none')
 
 # Login & Registration
 

@@ -37,8 +37,7 @@ class Users(db.Model, UserMixin):
 
 
 class Course(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.String(56))
+    id = db.Column(db.String(56), primary_key=True)
     title = db.Column(db.String(256))
     instructor = db.Column(db.String(128))
     price = db.Column(db.String(56))
@@ -47,7 +46,7 @@ class Course(db.Model):
 class TakenCourses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     userId = db.Column(db.Integer)
-    courseId = db.Column(db.Integer)
+    courseId = db.Column(db.String(56))
     date = db.Column(db.Date)
 
 @login_manager.user_loader
