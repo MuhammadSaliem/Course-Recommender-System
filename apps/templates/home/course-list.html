@@ -5,9 +5,7 @@
 {% block content %}
   
 
-{% for course in courses %}
-  <p> {{ course['id'] }} </p>
-{% endfor %}
+
 
   <!-- Page content -->
   <div class="container-fluid mt--6" style="padding-top: 120px;">
@@ -23,28 +21,32 @@
             <table class="table align-items-center table-flush">
               <thead class="thead-light">
                 <tr>
-                  <th scope="col" class="sort" data-sort="name">Project</th>
-                  <th scope="col" class="sort" data-sort="budget">Budget</th>
-                  <th scope="col" class="sort" data-sort="status">Status</th>
-                  <th scope="col">Users</th>
+                  <th scope="col" class="sort" data-sort="name">id</th>
+                  <th scope="col" class="sort" data-sort="budget">title</th>
+                  <th scope="col" class="sort" data-sort="status">instructor</th>
+                  <th scope="col">Price</th>
                   <th scope="col" class="sort" data-sort="completion">Completion</th>
                   <th scope="col"></th>
                 </tr>
               </thead>
+
+              {% for course in courses %}
+              
+              
               <tbody class="list">
                 <tr>
                   <th scope="row">
                     <div class="media align-items-center">
                       <a href="#" class="avatar rounded-circle mr-3">
-                        <img alt="Image placeholder" src="/static/assets/img/theme/bootstrap.jpg">
+                        <img alt="Image placeholder" src="{{course['image']}}">
                       </a>
                       <div class="media-body">
-                        <span class="name mb-0 text-sm">Argon Design System</span>
+                        <span class="name mb-0 text-sm">{{course['id']}}</span>
                       </div>
                     </div>
                   </th>
                   <td class="budget">
-                    $2500 USD
+                    {{course['title']}}
                   </td>
                   <td>
                     <span class="badge badge-dot mr-4">
@@ -55,17 +57,9 @@
                   <td>
                     <div class="avatar-group">
                       <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Ryan Tompson">
-                        <img alt="Image placeholder" src="/static/assets/img/theme/team-1.jpg">
+                        <img alt="Image placeholder" src="{{ course['image'] }}">
                       </a>
-                      <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Romina Hadid">
-                        <img alt="Image placeholder" src="/static/assets/img/theme/team-2.jpg">
-                      </a>
-                      <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Alexander Smith">
-                        <img alt="Image placeholder" src="/static/assets/img/theme/team-3.jpg">
-                      </a>
-                      <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Jessica Doe">
-                        <img alt="Image placeholder" src="/static/assets/img/theme/team-4.jpg">
-                      </a>
+                      <p> {{course['price']}}</p>
                     </div>
                   </td>
                   <td>
@@ -84,13 +78,17 @@
                         <i class="fas fa-ellipsis-v"></i>
                       </a>
                       <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
+                        <a class="dropdown-item" href="#">Unenroll</a>
                       </div>
                     </div>
                   </td>
                 </tr>
+
+                {% endfor %}
+
+
+
+
                 <tr>
                   <th scope="row">
                     <div class="media align-items-center">
