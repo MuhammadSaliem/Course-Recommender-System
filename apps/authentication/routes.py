@@ -92,11 +92,11 @@ def course():
     taken_courses = userTakenCoursesIds(username)
     
     if request.method == 'GET':
-        if  username !=None :
+        if  len(taken_courses) > 0 :
             df_temp = udemy_functions.recommend_for_user(username , 5,taken_courses, df_courses, df_norm)
             df_temp= df_temp.iloc[1:50][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
             return render_template('home/course.html', courses = df_temp, segment= 'none')
-        return "No respone bro!"
+        return render_template('home/course.html',courses= df_courses.iloc[1:100][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
 
     if request.method == 'POST':
         #print('***********************', request.form['AddCourseButton'], '**********************')
