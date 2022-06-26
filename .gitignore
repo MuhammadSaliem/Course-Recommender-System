@@ -1,0 +1,46 @@
+# byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# tests and coverage
+*.pytest_cache
+.coverage
+
+# database & logs
+*.db
+*.sqlite3
+*.log
+
+# venv
+env
+venv
+data
+migrations/
+.ipynb_checkpoints
+
+# other
+.DS_Store
+
+# sphinx docs 
+_build
+_static
+_templates
+
+# javascript
+package-lock.json
+.vscode/symbols.json
+
+apps/static/assets/node_modules
+apps/static/assets/yarn.lock
+apps/static/assets/.temp
+
+data/cleaned/cleaned.rar
+data/cleaned/df_courses.csv
+data/cleaned/df_reviews.csv
+data/raw/df_courses.csv
+data/raw/df_review.csv
+data/raw/df_temp.csv
+data/raw/raw.rar
+data/Recommending/df_courses.csv
+data/Recommending/df_norm.csv
+Untitled.ipynb
