@@ -1,26 +1,4 @@
-#import requests
-#import ast
-#import re
-#import numpy as np
-#import pandas as pd
-#import matplotlib.pyplot as plt
-#import seaborn as sns
-#from wordcloud import WordCloud
-#from nltk.tokenize import word_tokenize
-#from nltk.stem import SnowballStemmer
-#from operator import itemgetter
-#from collections import Counter
-#import matplotlib
-#import squarify
-#from sklearn.cluster import KMeans
-#from scipy.spatial.distance import pdist
-#from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
-#from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import cosine_similarity
-#from sklearn.metrics import euclidean_distances
-#from sklearn.preprocessing import StandardScaler
-
-
 
 
 def recommend_courses(course_id, n_courses, df_courses, df_norm):

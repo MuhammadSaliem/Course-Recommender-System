@@ -38,6 +38,7 @@ class Users(db.Model, UserMixin):
 
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.String(56))
     title = db.Column(db.String(256))
     instructor = db.Column(db.String(128))
     price = db.Column(db.String(56))

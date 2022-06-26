@@ -3,7 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from re import L
+from re import I, L
 from flask import render_template, redirect, request, url_for
 from flask_login import (
     current_user,
@@ -12,6 +12,7 @@ from flask_login import (
     logout_user
 )
 
+import os
 from apps import db, login_manager
 from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm
@@ -38,38 +39,57 @@ def route_default():
 @blueprint.route('/data')
 def data():
     #Add courses to sqlite
-    '''
-    df = pd.read_csv('data/df_courses.csv')
-    print("*********************** ", str(df['id'][0]), "*********************** ")
+    df = df_courses
     lst = []
     for i in range(len(df)):
         course = Course()
-        
+        course.course_id = str(df['id'][i])
         course.title = df['published_title'][i]
         course.price = df['price'][i]
-        course.image = df['image_304x171'][i]
+        course.image = df['image'][i]
+        course.instructor = df['instructor'][i]
 
-        s = df['visible_instructdors'][i]
+        '''s = df['visible_instructdors'][i]
         start = s.find("'title': '") + 10
         end = s.find("', 'name'", start)
         course.instructor = s[start:end]
+        '''
 
         db.session.add(course)
-        db.session.commit()
-    '''
+           
 
     #Add reviews to sqlite
+    db.session.commit()
     return jsonify({'ahmed': 15, 'Zena': 23, 'Karim': 23})
 
-@blueprint.route('/courses', methods = ['GET', 'POST'])    
-@login_required
-def course():   
+#Return list of id of the user taken courses
+def userTakenCoursesIds(user):
+
     username = current_user.username 
     _courseList = TakenCourses.query.filter_by(userId = current_user.id)
 
     taken_courses = []
     for course in _courseList:
         taken_courses.append(course.courseId)
+
+    return taken_courses    
+
+#Return list of courses taken by a user
+def userTakenCourses(username):
+    course_id_list= userTakenCoursesIds(current_user.username)
+    courseList = []
+    for courseid in course_id_list:
+        courseList.append(Course.query.filter_by(course_id = courseid).first())
+        print(courseid)
+
+    return courseList        
+
+@blueprint.route('/courses', methods = ['GET', 'POST'])    
+@login_required
+def course():   
+
+    username = current_user.username
+    taken_courses = userTakenCoursesIds(username)
     
     if request.method == 'GET':
         if  username !=None :
@@ -99,7 +119,12 @@ def addCourse():
             db.session.commit()
             return redirect('/courses')
 
-    
+@blueprint.route('/usercourses', methods = ['GET'])    
+@login_required
+def userCourses():    
+    courseList = userTakenCourses(current_user.username)
+    print('*********************************************', courseList[0].course_id)
+    return render_template('home/course-list.html', courses = courseList, segment= 'none')
 
 # Login & Registration
 
