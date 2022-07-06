@@ -4,7 +4,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from re import I, L
-from flask import render_template, redirect, request, url_for
+from flask import render_template, redirect, request, session, url_for
 from flask_login import (
     current_user,
     login_required,
@@ -133,6 +133,18 @@ def addCourse():
             db.session.commit()
             return redirect('/courses')
 
+@blueprint.route('/deletecourse', methods = ['POST'])    
+@login_required
+def deleteCourse():    
+    if request.method == 'POST':
+        _course = TakenCourses.query.filter_by(courseId = request.form['deleteCourseId'], userId = current_user.id).first()
+
+        if _course:
+            db.session.delete(_course)
+            db.session.commit()
+            
+            return redirect('/usercourses')
+            
 @blueprint.route('/usercourses', methods = ['GET'])    
 @login_required
 def userCourses():    
