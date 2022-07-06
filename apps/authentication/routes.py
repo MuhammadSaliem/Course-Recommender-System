@@ -83,22 +83,34 @@ def userTakenCourses(username):
 
     return courseList        
 
-@blueprint.route('/courses', methods = ['GET', 'POST'])    
+@blueprint.route('/courses/<page>', methods = ['GET', 'POST'])   
+@blueprint.route('/courses', methods = ['GET', 'POST'])     
 @login_required
-def course():   
-
+def course(page= 1):   
     username = current_user.username
     taken_courses = userTakenCoursesIds(username)
-    #print('***********************', type(taken_courses[0]), '**********************')
-    print('***********************', len(taken_courses), '**********************')
+    print("************************************",page, type(page))
+    page = int(page)
+    print("************************************",page, type(page))
+
+    if page == None:
+        page = 1
+    else:
+        if page < 1:
+            page = 1
+        elif page > (len(df_courses)/50)+1:
+            page = (len(df_courses)/50)
+
+    start = (page*50)-50       
+    end = page * 50
 
     if request.method == 'GET':
         if  len(taken_courses) > 0 :
             df_temp = udemy_functions.recommend_for_user(username , 5,taken_courses, df_courses, df_norm)
             print('***********************', len(df_temp), '**********************')
-            df_temp= df_temp.iloc[1:50][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
+            df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
             return render_template('home/course.html', courses = df_temp, segment= 'none')
-        return render_template('home/course.html',courses= df_courses.iloc[1:100][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
+        return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
 
     if request.method == 'POST':
         #print('***********************', request.form['AddCourseButton'], '**********************')
