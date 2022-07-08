@@ -14,7 +14,7 @@ def recommend_for_user(n_courses, taken_courses, df_courses, df_norm):
     n_courses += 1
     #list_courses= taken_courses
     #numOfCourses =len(taken_courses)
-    index_courses=df_courses[df_courses['id'].isin(taken_courses)].index
+    #index_courses=df_courses[df_courses['id'].isin(taken_courses)].index
 
     if len(taken_courses) >= 1:
         #n_courses=n_courses+1

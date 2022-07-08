@@ -27,10 +27,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 #import required datasets for recommendation
-#f_raw = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/cleaned/courses_dataFrame.csv', delimiter= ' ')
+
 courses_dataFrame = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/Recommending/df_courses.csv')
 courses_normalized_dataFrame = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/Recommending/df_norm.csv')
-#df_reviews=pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/cleaned/df_reviews.csv', index_col=0)
 
 
 @blueprint.route('/')
@@ -123,6 +122,8 @@ def course(page= 1):
             df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
             return render_template('home/course.html', courses = df_temp, segment= 'none')
         return render_template('home/course.html',courses= courses_dataFrame.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
+
+
 
 @blueprint.route('/search/<keyword>/<page>', methods = ['GET', 'POST'])   
 @blueprint.route('/search/<keyword>', methods = ['GET', 'POST']) 
