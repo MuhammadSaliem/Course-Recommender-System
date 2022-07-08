@@ -27,9 +27,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 #import required datasets for recommendation
-#f_raw = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/cleaned/df_courses.csv', delimiter= ' ')
-df_courses = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/Recommending/df_courses.csv')
-df_norm = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/Recommending/df_norm.csv')
+#f_raw = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/cleaned/courses_dataFrame.csv', delimiter= ' ')
+courses_dataFrame = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/Recommending/df_courses.csv')
+courses_normalized_dataFrame = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/Recommending/df_norm.csv')
 #df_reviews=pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/cleaned/df_reviews.csv', index_col=0)
 
 
@@ -40,7 +40,7 @@ def route_default():
 @blueprint.route('/data')
 def data():
     #Add courses to sqlite
-    df = df_courses
+    df = courses_dataFrame
     lst = []
     for i in range(len(df)):
         course = Course()
@@ -87,13 +87,13 @@ def userTakenCourses(username):
 def course_recommendation_list(taken_courses):
     if len(taken_courses) >= 1:
 
-        tmp_dataFrame =df_courses.copy()
+        tmp_dataFrame =courses_dataFrame.copy()
         for i, course_id in enumerate(taken_courses):
-            tmp_dataFrame[i] = cosine_similarity(df_norm.values, df_norm.loc[df_courses[df_courses['id']==course_id].index.values].values.reshape(1, -1))
+            tmp_dataFrame[i] = cosine_similarity(courses_normalized_dataFrame.values, courses_normalized_dataFrame.loc[courses_dataFrame[courses_dataFrame['id']==course_id].index.values].values.reshape(1, -1))
 
         tmp_dataFrame['avg_cos_sim']= tmp_dataFrame.iloc[:,-len(taken_courses):].mean(axis=1).values
         
-        tmp_dataFrame.drop(index=df_courses[df_courses['id'].isin(taken_courses)].index, inplace=True)
+        tmp_dataFrame.drop(index=courses_dataFrame[courses_dataFrame['id'].isin(taken_courses)].index, inplace=True)
         tmp_dataFrame =tmp_dataFrame.sort_values('avg_cos_sim', ascending=False).reset_index(drop=True)
 
         return tmp_dataFrame 
@@ -111,8 +111,8 @@ def course(page= 1):
     else:
         if page < 1:
             page = 1
-        elif page > (len(df_courses)/50)+1:
-            page = (len(df_courses)/50)
+        elif page > (len(courses_dataFrame)/50)+1:
+            page = (len(courses_dataFrame)/50)
 
     start = (page*50)-50       
     end = page * 50
@@ -122,7 +122,7 @@ def course(page= 1):
             df_temp = course_recommendation_list(taken_courses)
             df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
             return render_template('home/course.html', courses = df_temp, segment= 'none')
-        return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
+        return render_template('home/course.html',courses= courses_dataFrame.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
 
 @blueprint.route('/search/<keyword>/<page>', methods = ['GET', 'POST'])   
 @blueprint.route('/search/<keyword>', methods = ['GET', 'POST']) 
@@ -140,8 +140,8 @@ def search(keyword= None, page=1):
     else:
         if page < 1:
             page = 1
-        elif page > (len(df_courses)/50)+1:
-            page = (len(df_courses)/50)
+        elif page > (len(courses_dataFrame)/50)+1:
+            page = (len(courses_dataFrame)/50)
 
     start = (page*50)-50       
     end = page * 50
@@ -150,13 +150,15 @@ def search(keyword= None, page=1):
     if len(taken_courses) > 0 :
         df_temp = course_recommendation_list(taken_courses)
         if keyword != None:
-            df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=True).reset_index(drop=True) 
+            df_temp= df_temp[courses_dataFrame['description_text'].str.contains(keyword, regex= False) | courses_dataFrame['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=True).reset_index(drop=True) 
         df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
         return render_template('home/course.html', courses = df_temp, segment= 'none')
     if keyword != None:
-        df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=True).reset_index(drop=True) 
-    df_temp= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']]
-    return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
+        df_temp= courses_dataFrame[courses_dataFrame['description_text'].str.contains(keyword, regex= False) | courses_dataFrame['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=True).reset_index(drop=True) 
+    else:
+        df_temp= courses_dataFrame.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']]
+
+    return render_template('home/course.html',courses= df_temp, segment= 'none')
 
 
             
