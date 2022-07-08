@@ -22,7 +22,8 @@ from apps.authentication.util import verify_pass
 
 import pandas as pd
 from flask import jsonify
-from Recommender_Engine import udemy_functions
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 
 #import required datasets for recommendation
@@ -81,7 +82,28 @@ def userTakenCourses(username):
         courseList.append(Course.query.filter_by(id = courseid).first())
         print(courseid)
 
-    return courseList        
+    return courseList     
+
+def recommend_for_user(n_courses, taken_courses):
+    #n_courses += 1
+    #list_courses= taken_courses
+    #numOfCourses =len(taken_courses)
+    #index_courses=df_courses[df_courses['id'].isin(taken_courses)].index
+
+    if len(taken_courses) >= 1:
+        #n_courses=n_courses+1
+        tmp_dataFrame =df_courses.copy()
+        for i, course_id in enumerate(taken_courses):
+            #id_=df_courses[df_courses['id']==course_id].index.values
+            #X = df_norm.values
+            #Y = df_norm.loc[id_].values.reshape(1, -1)
+            tmp_dataFrame[i] = cosine_similarity(df_norm.values, df_norm.loc[df_courses[df_courses['id']==course_id].index.values].values.reshape(1, -1))
+
+        tmp_dataFrame['avg_cos_sim']= tmp_dataFrame.iloc[:,-len(taken_courses):].mean(axis=1).values
+        #df_temp['avg_cos_sim']=temp_avg
+        tmp_dataFrame.drop(index=df_courses[df_courses['id'].isin(taken_courses)].index, inplace=True)
+        tmp_dataFrame =tmp_dataFrame.sort_values('avg_cos_sim', ascending=False).reset_index(drop=True)
+        return tmp_dataFrame #return df_temp for Flask API           
 
 @blueprint.route('/courses/<page>', methods = ['GET', 'POST'])   
 @blueprint.route('/courses', methods = ['GET', 'POST'])     
@@ -104,7 +126,7 @@ def course(page= 1):
 
     if request.method == 'GET':
         if  len(taken_courses) > 0 :
-            df_temp = udemy_functions.recommend_for_user(username , 5,taken_courses, df_courses, df_norm)
+            df_temp = recommend_for_user(5,taken_courses)
             df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
             return render_template('home/course.html', courses = df_temp, segment= 'none')
         return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
@@ -133,7 +155,7 @@ def search(keyword= None, page=1):
 
      
     if  len(taken_courses) > 0 :
-        df_temp = udemy_functions.recommend_for_user(username , 5,taken_courses, df_courses, df_norm)
+        df_temp = recommend_for_user(5,taken_courses)
         if keyword != None:
             df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=True).reset_index(drop=True) 
         df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
