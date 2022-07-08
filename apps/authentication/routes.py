@@ -112,11 +112,40 @@ def course(page= 1):
             return render_template('home/course.html', courses = df_temp, segment= 'none')
         return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
 
-    if request.method == 'POST':
-        #print('***********************', request.form['AddCourseButton'], '**********************')
-        df_temp = udemy_functions.recommend_for_user(username , 5,df_reviews, df_courses, df_norm)
-        df_temp= df_temp.iloc[1:100][['id', 'published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
-        return render_template('home/course.html', courses = df_temp, segment= 'none')
+@blueprint.route('/search/<keyword>/<page>', methods = ['GET'])   
+@blueprint.route('/search/<keyword>', methods = ['GET']) 
+@blueprint.route('/search', methods = ['GET']) 
+def search(keyword= None, page=1):
+    username = current_user.username
+    taken_courses = userTakenCoursesIds(username)
+    page = int(page)
+
+    if page == None:
+        page = 1
+    else:
+        if page < 1:
+            page = 1
+        elif page > (len(df_courses)/50)+1:
+            page = (len(df_courses)/50)
+
+    start = (page*50)-50       
+    end = page * 50
+
+    if request.method == 'GET':
+        if  len(taken_courses) > 0 :
+            df_temp = udemy_functions.recommend_for_user(username , 5,taken_courses, df_courses, df_norm)
+            print('***********************', len(df_temp), '**********************')
+            if keyword != None:
+                df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_cos_sim', ascending=False).reset_index(drop=True) 
+            df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
+            return render_template('home/course.html', courses = df_temp, segment= 'none')
+        if keyword != None:
+            df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=False).reset_index(drop=True) 
+        df_temp= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']]
+        return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
+
+
+
 
             
 @blueprint.route('/addcourse', methods = ['POST'])    
@@ -149,10 +178,13 @@ def deleteCourse():
 @login_required
 def userCourses():    
     courseList = userTakenCourses(current_user.username)    
+    return render_template('home/course-list.html', courses = courseList, segment= 'none')
+    '''
     if len(courseList) > 0:
         return render_template('home/course-list.html', courses = courseList, segment= 'none')
     return render_template('home/page-404.html'), 404         
-
+    '''
+    
     
 
 # Login & Registration
