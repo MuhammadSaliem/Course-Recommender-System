@@ -27,10 +27,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 #import required datasets for recommendation
-df_raw = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/cleaned/df_courses.csv', delimiter= ' ')
+#f_raw = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/cleaned/df_courses.csv', delimiter= ' ')
 df_courses = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/Recommending/df_courses.csv')
 df_norm = pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/Recommending/df_norm.csv')
-df_reviews=pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/cleaned/df_reviews.csv', index_col=0)
+#df_reviews=pd.read_csv('C:/Graduation/argon-dashboard-flask-master/data/cleaned/df_reviews.csv', index_col=0)
 
 
 @blueprint.route('/')
@@ -84,7 +84,7 @@ def userTakenCourses(username):
 
     return courseList     
 
-def course_Reommendation_list(taken_courses):
+def course_recommendation_list(taken_courses):
     if len(taken_courses) >= 1:
 
         tmp_dataFrame =df_courses.copy()
@@ -119,7 +119,7 @@ def course(page= 1):
 
     if request.method == 'GET':
         if  len(taken_courses) > 0 :
-            df_temp = course_Reommendation_list(taken_courses)
+            df_temp = course_recommendation_list(taken_courses)
             df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
             return render_template('home/course.html', courses = df_temp, segment= 'none')
         return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
@@ -147,8 +147,8 @@ def search(keyword= None, page=1):
     end = page * 50
 
      
-    if  len(taken_courses) > 0 :
-        df_temp = course_Reommendation_list(taken_courses)
+    if len(taken_courses) > 0 :
+        df_temp = course_recommendation_list(taken_courses)
         if keyword != None:
             df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=True).reset_index(drop=True) 
         df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
@@ -157,8 +157,6 @@ def search(keyword= None, page=1):
         df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=True).reset_index(drop=True) 
     df_temp= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']]
     return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
-
-
 
 
             
