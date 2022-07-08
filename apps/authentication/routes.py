@@ -89,9 +89,7 @@ def userTakenCourses(username):
 def course(page= 1):   
     username = current_user.username
     taken_courses = userTakenCoursesIds(username)
-    print("************************************",page, type(page))
     page = int(page)
-    print("************************************",page, type(page))
 
     if page == None:
         page = 1
@@ -107,7 +105,6 @@ def course(page= 1):
     if request.method == 'GET':
         if  len(taken_courses) > 0 :
             df_temp = udemy_functions.recommend_for_user(username , 5,taken_courses, df_courses, df_norm)
-            print('***********************', len(df_temp), '**********************')
             df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
             return render_template('home/course.html', courses = df_temp, segment= 'none')
         return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
