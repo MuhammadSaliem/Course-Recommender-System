@@ -112,13 +112,16 @@ def course(page= 1):
             return render_template('home/course.html', courses = df_temp, segment= 'none')
         return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
 
-@blueprint.route('/search/<keyword>/<page>', methods = ['GET'])   
-@blueprint.route('/search/<keyword>', methods = ['GET']) 
-@blueprint.route('/search', methods = ['GET']) 
+@blueprint.route('/search/<keyword>/<page>', methods = ['GET', 'POST'])   
+@blueprint.route('/search/<keyword>', methods = ['GET', 'POST']) 
+@blueprint.route('/search', methods = ['GET', 'POST']) 
 def search(keyword= None, page=1):
     username = current_user.username
     taken_courses = userTakenCoursesIds(username)
     page = int(page)
+
+    if request.form.get('keyword') != None:
+        keyword = request.form.get('keyword')
 
     if page == None:
         page = 1
@@ -131,18 +134,18 @@ def search(keyword= None, page=1):
     start = (page*50)-50       
     end = page * 50
 
-    if request.method == 'GET':
-        if  len(taken_courses) > 0 :
-            df_temp = udemy_functions.recommend_for_user(username , 5,taken_courses, df_courses, df_norm)
-            print('***********************', len(df_temp), '**********************')
-            if keyword != None:
-                df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_cos_sim', ascending=False).reset_index(drop=True) 
-            df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
-            return render_template('home/course.html', courses = df_temp, segment= 'none')
+     
+    if  len(taken_courses) > 0 :
+        df_temp = udemy_functions.recommend_for_user(username , 5,taken_courses, df_courses, df_norm)
+        print('***********************', len(df_temp), '**********************')
         if keyword != None:
             df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=False).reset_index(drop=True) 
-        df_temp= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']]
-        return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
+        df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
+        return render_template('home/course.html', courses = df_temp, segment= 'none')
+    if keyword != None:
+        df_temp= df_temp[df_courses['description_text'].str.contains(keyword, regex= False) | df_courses['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=False).reset_index(drop=True) 
+    df_temp= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']]
+    return render_template('home/course.html',courses= df_courses.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']], segment= 'none')
 
 
 
