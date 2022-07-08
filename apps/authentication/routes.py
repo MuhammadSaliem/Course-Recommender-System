@@ -150,11 +150,12 @@ def search(keyword= None, page=1):
     if len(taken_courses) > 0 :
         df_temp = course_recommendation_list(taken_courses)
         if keyword != None:
-            df_temp= df_temp[courses_dataFrame['description_text'].str.contains(keyword, regex= False) | courses_dataFrame['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=True).reset_index(drop=True) 
+            print("*********************************************** Hello World")        
+            df_temp= df_temp[courses_dataFrame['description_text'].str.contains(keyword, regex= False) | courses_dataFrame['published_title'].str.contains(keyword, regex= False)]
         df_temp= df_temp.iloc[start:end][['id','published_title', 'avg_cos_sim', 'image', 'instructor', 'price', 'description_text']]
         return render_template('home/course.html', courses = df_temp, segment= 'none')
     if keyword != None:
-        df_temp= courses_dataFrame[courses_dataFrame['description_text'].str.contains(keyword, regex= False) | courses_dataFrame['published_title'].str.contains(keyword, regex= False)].sort_values('avg_rating', ascending=True).reset_index(drop=True) 
+        df_temp= courses_dataFrame[courses_dataFrame['description_text'].str.contains(keyword, regex= False) | courses_dataFrame['published_title'].str.contains(keyword, regex= False)]
     else:
         df_temp= courses_dataFrame.iloc[start:end][['id','published_title', 'image', 'instructor', 'price', 'description_text']]
 
