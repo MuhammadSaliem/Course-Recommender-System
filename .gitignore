@@ -14,7 +14,6 @@ __pycache__/
 # venv
 env
 venv
-data
 migrations/
 .ipynb_checkpoints
 
