@@ -30,7 +30,9 @@
                           <p class="card-text text-left">{{row['price']}}EGP</p>
                           {% endif %}
                           
-                            <p class="card-text text-left">Cosine Similarity {{row['avg_cos_sim']}}</p>                
+                          {% if row['avg_cos_sim']%}
+                            <p class="card-text text-left">Cosine Similarity {{row['avg_cos_sim']}}</p>
+                          {% endif %}                
                           
                         </div>
                         <div class="col">
