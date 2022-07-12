@@ -221,7 +221,7 @@ def login():
         if user and verify_pass(password, user.password):
 
             login_user(user)
-            return redirect(url_for('authentication_blueprint.route_default'))
+            return redirect('/courses')
 
         # Something (user or pass) is not ok
         return render_template('accounts/login.html',
@@ -232,7 +232,8 @@ def login():
         return render_template('accounts/login.html',
                                form=login_form)
     user = current_user.username                          
-    return redirect(url_for('home_blueprint.index', username = user))
+    return redirect('/courses')
+
 
 
 @blueprint.route('/register', methods=['GET', 'POST'])
